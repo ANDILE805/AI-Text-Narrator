@@ -1,6 +1,7 @@
 import boto3
 
-polly = boto3.client('polly')
+polly = boto3.client('polly', region_name='us-east-1')
+
 
 text = "Hello! This is your first narrated voice using Amazon Polly."
 
