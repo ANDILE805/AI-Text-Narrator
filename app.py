@@ -61,20 +61,18 @@ if st.button("🎬 Let’s Narrate!"):
         st.warning("Please enter or upload text to narrate ✍️")
     else:
         with st.spinner("Generating voice magic... 🎛️"):
-            polly = boto3.client('polly')
-
             response = polly.synthesize_speech(
                 Text=text_input,
                 OutputFormat='mp3',
                 VoiceId=voice
             )
 
-            output_file = f"narration_{voice}.mp3"
-            with open(output_file, 'wb') as f:
-                f.write(response['AudioStream'].read())
 
-            st.success("✅ Narration complete! Click below to listen 🎧")
-            st.audio(output_file, format='audio/mp3')
+           audio_bytes = response['AudioStream'].read()
+
+st.success("✅ Narration complete! Click below to listen 🎧")
+st.audio(audio_bytes, format='audio/mp3')
+
 
 
 st.markdown('''
