@@ -1,22 +1,10 @@
 import streamlit as st
-import boto3
-
-aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
-aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
-region_name = st.secrets["aws"]["region_name"]
-
-polly = boto3.client(
-    "polly",
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key,
-    region_name=region_name
-)
+from narrator import synthesize_text_to_speech
 
 st.set_page_config(
     page_title="Text Narrator App",
     layout="centered"
 )
-
 
 st.markdown("""
     <style>
@@ -40,40 +28,25 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
 st.markdown('<div class="title">AI Text Narrator 🎧</div>', unsafe_allow_html=True)
 st.subheader("Turn your text into speech with fun & flair 💫")
-
 
 text_input = st.text_area("✨ Type something awesome here:")
 uploaded_file = st.file_uploader("📂 Or upload a .txt file to narrate", type=["txt"])
 
-
 voice = st.selectbox("🎤 Choose a voice you vibe with", ["Joanna", "Matthew", "Ivy", "Brian", "Amy"])
-
 
 if uploaded_file:
     text_input = uploaded_file.read().decode("utf-8")
-
 
 if st.button("🎬 Let’s Narrate!"):
     if not text_input.strip():
         st.warning("Please enter or upload text to narrate ✍️")
     else:
         with st.spinner("Generating voice magic... 🎛️"):
-            response = polly.synthesize_speech(
-                Text=text_input,
-                OutputFormat='mp3',
-                VoiceId=voice
-            )
-
-
-           audio_bytes = response['AudioStream'].read()
-
-st.success("✅ Narration complete! Click below to listen 🎧")
-st.audio(audio_bytes, format='audio/mp3')
-
-
+            audio_bytes = synthesize_text_to_speech(text_input, voice)
+            st.success("✅ Narration complete! Click below to listen 🎧")
+            st.audio(audio_bytes, format='audio/mp3')
 
 st.markdown('''
 <div class="footer">
@@ -83,4 +56,5 @@ st.markdown('''
     </a>
 </div>
 ''', unsafe_allow_html=True)
+
 
